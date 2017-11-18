@@ -16,6 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.arjunvidyarthi.inventory.EditorActivity"
+            android:label="Add item"
+            android:parentActivityName="com.example.arjunvidyarthi.inventory.CatalogActivity" >
+
+        </activity>
+
     </application>
 
 </manifest>
