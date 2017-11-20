@@ -68,8 +68,16 @@ public class ItemProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(@NonNull Uri uri) {
-        return null;
+    public String getType(Uri uri) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ITEMS:
+                return ItemContract.ItemEntry.CONTENT_LIST_TYPE;
+            case ITEM_ID:
+                return ItemContract.ItemEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
+        }
     }
 
     @Nullable
@@ -125,12 +133,84 @@ public class ItemProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        // Get writeable database
+        SQLiteDatabase database = myDbHelper.getWritableDatabase();
+
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ITEMS:
+                // Delete all rows that match the selection and selection args
+                getContext().getContentResolver().notifyChange(uri, null);
+                return database.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
+            case ITEM_ID:
+                // Delete a single row given by the ID in the URI
+                selection = ItemContract.ItemEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                getContext().getContentResolver().notifyChange(uri, null);
+                return database.delete(ItemContract.ItemEntry.TABLE_NAME, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
+
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection,
+                      String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ITEMS:
+                return updateItem(uri, contentValues, selection, selectionArgs);
+            case ITEM_ID:
+                // For the PET_ID code, extract out the ID from the URI,
+                // so we know which row to update. Selection will be "_id=?" and selection
+                // arguments will be a String array containing the actual ID.
+                selection = ItemContract.ItemEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return updateItem(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
+        }
+    }
+
+    private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        if(values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_NAME)){
+            String name = values.getAsString(ItemContract.ItemEntry.COLUMN_ITEM_NAME);
+            if(name==null){
+                throw new IllegalArgumentException("Item requires a name.");
+            }
+        }
+
+        if(values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_PRICE)){
+            String price = values.getAsString(ItemContract.ItemEntry.COLUMN_ITEM_PRICE);
+            if(price == null){
+                throw new IllegalArgumentException("Item requires a price.");
+            }
+        }
+
+        if(values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY)){
+            Integer quantity = values.getAsInteger(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY);
+            if(quantity==null || quantity<0){
+                throw new IllegalArgumentException("Item quantity invalid.");
+            }
+        }
+
+        if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER)) {
+            // Check that the weight is greater than or equal to 0 kg
+            Integer supplier = values.getAsInteger(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER);
+            if (supplier == null ) {
+                throw new IllegalArgumentException("Supplier contact invalid.");
+            }
+        }
+
+        if (values.size() == 0) {
+            return 0;
+        }
+        SQLiteDatabase database = myDbHelper.getWritableDatabase();
+        getContext().getContentResolver().notifyChange(uri, null);
+        // Returns the number of database rows affected by the update statement
+        return database.update(ItemContract.ItemEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 }

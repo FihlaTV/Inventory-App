@@ -26,6 +26,10 @@
                 android:value="com.example.arjunvidyarthi.inventory.CatalogActivity" />
 
         </activity>
+        <provider
+            android:name=".data.ItemProvider"
+            android:authorities="com.example.arjunvidyarthi.inventory"
+            android:exported="false" />
 
     </application>
 

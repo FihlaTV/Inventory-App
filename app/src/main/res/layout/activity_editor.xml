@@ -15,7 +15,7 @@
         app:srcCompat="@mipmap/ic_launcher" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/image_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -68,7 +68,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Enter price of commodity"
-            android:inputType="textPersonName"
+            android:inputType="numberDecimal"
             android:textSize="20sp" />
 
     </LinearLayout>
@@ -123,7 +123,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/item_supplier_contact"
+            android:id="@+id/edit_supplier_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

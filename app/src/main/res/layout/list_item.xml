@@ -56,7 +56,8 @@
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#10a300"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
