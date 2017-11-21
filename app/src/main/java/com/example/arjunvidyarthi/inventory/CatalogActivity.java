@@ -26,7 +26,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private ItemDbHelper mDbHelper;
     private static final int ITEM_LOADER = 1;
     ItemCursorAdapter mCursorAdapter;
-    private Button soldButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +38,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         mCursorAdapter = new ItemCursorAdapter(this, null);
         petListView.setAdapter(mCursorAdapter);
-
-        soldButton = (Button) findViewById(R.id.item_sold);
 
         getLoaderManager().initLoader(ITEM_LOADER,null,this);
 

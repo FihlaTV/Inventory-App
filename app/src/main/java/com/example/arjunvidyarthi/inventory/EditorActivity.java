@@ -2,14 +2,18 @@ package com.example.arjunvidyarthi.inventory;
 
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -57,11 +61,6 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        if(currentItemUri==null){
-            setTitle("Add an item");
-        } else{
-            setTitle("Edit item");
-        }
 
         mNameEditText = (EditText) findViewById(R.id.edit_name);
         mPriceEditText = (EditText) findViewById(R.id.edit_price);
@@ -75,6 +74,11 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
 
         mItemImage = (ImageView) findViewById(R.id.item_image);
 
+        mNameEditText.setOnTouchListener(mTouchListener);
+        mPriceEditText.setOnTouchListener(mTouchListener);
+        mQuantityEditText.setOnTouchListener(mTouchListener);
+        mSupplierEditText.setOnTouchListener(mTouchListener);
+
         getLoaderManager().initLoader(0, null, this);
 
         mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -84,9 +88,36 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
                 finish();
             }
         });
+
+        mCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String supplier = mSupplierEditText.getText().toString().trim();
+
+                if (supplier == null || supplier == "") {
+                    Toast.makeText(EditorActivity.this, "Empty phone number", Toast.LENGTH_SHORT);
+                    return;
+                }
+
+                Intent intentC = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + supplier));
+                startActivity(intentC);
+
+            }
+        });
+
+        if (currentItemUri == null) {
+            setTitle("Add an item");
+            mDeleteButton.setVisibility(View.GONE);
+
+        } else {
+            setTitle("Edit item");
+
+        }
+
+
     }
 
-    private void saveItem(){
+    private void saveItem() {
         String itemName = mNameEditText.getText().toString().trim();
         String itemPrice = mPriceEditText.getText().toString().trim();
         int itemQuantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
@@ -104,10 +135,10 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
 
             if (newUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, "Insertion failed.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Insertion failed.", Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, "Inserted item",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Inserted item", Toast.LENGTH_SHORT).show();
             }
 
         } else {
@@ -158,5 +189,46 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mPriceEditText.clearComposingText();
         mQuantityEditText.clearComposingText();
         mSupplierEditText.clearComposingText();
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // User clicked on a menu option in the app bar overflow menu
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (!mItemChanged) {
+                    NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    return true;
+                }
+
+                DialogInterface.OnClickListener discardButtonClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    }
+                };
+
+                showUnsavedChangesDialog(discardButtonClickListener);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    private void showUnsavedChangesDialog(
+            DialogInterface.OnClickListener discardButtonClickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("You have unsaved changes");
+        builder.setPositiveButton("Discard", discardButtonClickListener);
+        builder.setNegativeButton("Keep editing", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
