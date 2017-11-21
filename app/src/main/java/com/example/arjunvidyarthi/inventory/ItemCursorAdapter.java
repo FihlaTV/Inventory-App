@@ -45,8 +45,10 @@ public class ItemCursorAdapter extends CursorAdapter {
         TextView quantity = (TextView) view.findViewById(R.id.item_quantity);
         ImageView img = (ImageView) view.findViewById(R.id.item_image);
         Button sold = (Button) view.findViewById(R.id.item_sold);
+
         final int quantityProduct = cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY));
-        final int pos = cursor.getPosition();
+        final int pos = cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry._ID));
+
         name.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_NAME)));
         price.setText("$"+cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_PRICE)));
         quantity.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY))));
@@ -54,26 +56,30 @@ public class ItemCursorAdapter extends CursorAdapter {
        sold.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-               Uri productUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, pos+1);
-               adjustProductQuantity(context, productUri, quantityProduct);
+               Uri itemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, pos);
+               decreaseProductQuantity(context, itemUri, quantityProduct);
            }
        });
 
     }
 
-    private void adjustProductQuantity(Context context, Uri productUri, int currentQuantityInStock) {
+    private void decreaseProductQuantity(Context context, Uri itemUri, int currentQuantity) {
 
-        int newQuantityValue = (currentQuantityInStock >= 1) ? currentQuantityInStock - 1 : 0;
+        int newQuantityValue = (currentQuantity >= 1) ? currentQuantity - 1 : 0;
 
-        if (currentQuantityInStock == 0) {
+        if (currentQuantity == 0) {
             Toast.makeText(context.getApplicationContext(), "Already out of stock!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY, newQuantityValue);
-        int numRowsUpdated = context.getContentResolver().update(productUri, contentValues, null, null);
-        Toast.makeText(context.getApplicationContext(), "Reduced quantity by one", Toast.LENGTH_SHORT).show();
-        if (numRowsUpdated < 0) {
+        int numRowsUpdated = context.getContentResolver().update(itemUri, contentValues, null, null);
+        if (numRowsUpdated > 0) {
+            Toast.makeText(context.getApplicationContext(), "Reduced quantity by one", Toast.LENGTH_SHORT).show();
+        }
+        if (numRowsUpdated <= 0) {
+            Toast.makeText(context.getApplicationContext(), "Error in updating", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Error in updating rows.");
         }
     }

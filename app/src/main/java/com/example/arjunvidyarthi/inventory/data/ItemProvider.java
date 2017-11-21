@@ -101,8 +101,8 @@ public class ItemProvider extends ContentProvider {
             throw new IllegalArgumentException("Item requires a valid quantity.");
         }
 
-        Integer supplier = contentValues.getAsInteger(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER);
-        if(supplier == null || supplier<0 || supplier==0){
+        String supplier = contentValues.getAsString(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER);
+        if (supplier == null) {
             throw new IllegalArgumentException("Item requires a valid supplier contact.");
         }
 
@@ -198,8 +198,7 @@ public class ItemProvider extends ContentProvider {
         }
 
         if (values.containsKey(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER)) {
-            // Check that the weight is greater than or equal to 0 kg
-            Integer supplier = values.getAsInteger(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER);
+            String supplier = values.getAsString(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER);
             if (supplier == null ) {
                 throw new IllegalArgumentException("Supplier contact invalid.");
             }

@@ -13,6 +13,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +37,8 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     private Button mCallButton;
     private Button mDeleteButton;
     private Button mSaveButton;
+    private Button mQuantInc;
+    private Button mQuantDec;
     private ImageView mItemImage;
 
     private Uri currentItemUri = null;
@@ -71,6 +74,8 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mCallButton = (Button) findViewById(R.id.call_supplier_button);
         mDeleteButton = (Button) findViewById(R.id.item_delete);
         mSaveButton = (Button) findViewById(R.id.item_save);
+        mQuantDec = (Button) findViewById(R.id.quant_dec);
+        mQuantInc = (Button) findViewById(R.id.quant_inc);
 
         mItemImage = (ImageView) findViewById(R.id.item_image);
 
@@ -78,6 +83,8 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupplierEditText.setOnTouchListener(mTouchListener);
+        mQuantInc.setOnTouchListener(mTouchListener);
+        mQuantDec.setOnTouchListener(mTouchListener);
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -94,13 +101,38 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
             public void onClick(View view) {
                 String supplier = mSupplierEditText.getText().toString().trim();
 
-                if (supplier == null || supplier == "") {
-                    Toast.makeText(EditorActivity.this, "Empty phone number", Toast.LENGTH_SHORT);
+                if (TextUtils.isEmpty(supplier)) {
+                    Toast.makeText(EditorActivity.this, "Empty phone number", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 Intent intentC = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + supplier));
                 startActivity(intentC);
+
+            }
+        });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditorActivity.this);
+                builder.setMessage("Confirm deletion");
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteItem();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
 
             }
         });
@@ -111,17 +143,60 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
 
         } else {
             setTitle("Edit item");
-
         }
 
+        mQuantInc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (TextUtils.isEmpty(mQuantityEditText.getText().toString())) {
+                    mQuantityEditText.setText("1");
+                    return;
+                }
+                int q = Integer.parseInt(mQuantityEditText.getText().toString());
+                mQuantityEditText.setText(String.valueOf(q + 1));
+                return;
 
+            }
+        });
+
+
+        mQuantDec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int q = Integer.parseInt(mQuantityEditText.getText().toString());
+                if (q > 0) {
+                    mQuantityEditText.setText(String.valueOf(q - 1));
+                    return;
+                } else if (TextUtils.isEmpty(mQuantityEditText.getText().toString())) {
+                    mQuantityEditText.setText("0");
+                }
+                Toast.makeText(EditorActivity.this, "Already 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        });
+
+    }
+
+
+    private void deleteItem() {
+        if (currentItemUri != null) {
+            int rowsDeleted = getContentResolver().delete(currentItemUri, null, null);
+
+            if (rowsDeleted == 0) {
+                Toast.makeText(this, "Error with deleting item", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        finish();
     }
 
     private void saveItem() {
         String itemName = mNameEditText.getText().toString().trim();
         String itemPrice = mPriceEditText.getText().toString().trim();
         int itemQuantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
-        int itemSupplier = Integer.parseInt(mSupplierEditText.getText().toString().trim());
+        String itemSupplier = mSupplierEditText.getText().toString().trim();
 
         ContentValues values = new ContentValues();
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, itemName);
@@ -179,7 +254,7 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
             mNameEditText.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_NAME)));
             mPriceEditText.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_PRICE)));
             mQuantityEditText.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY))));
-            mSupplierEditText.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER))));
+            mSupplierEditText.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER)));
         }
     }
 
@@ -231,4 +306,6 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+
+
 }

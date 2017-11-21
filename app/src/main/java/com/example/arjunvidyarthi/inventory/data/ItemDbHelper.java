@@ -15,7 +15,7 @@ public class ItemDbHelper extends SQLiteOpenHelper {
                     ItemContract.ItemEntry.COLUMN_ITEM_NAME + " TEXT NOT NULL," +
                     ItemContract.ItemEntry.COLUMN_ITEM_PRICE+ " TEXT NOT NULL," +
                     ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL,"+
-                    ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER + " INTEGER NOT NULL," +
+                    ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER + " TEXT NOT NULL," +
                     ItemContract.ItemEntry.COLUMN_ITEM_IMAGE + " TEXT);";
 
     private static final String SQL_DELETE_ENTRIES =

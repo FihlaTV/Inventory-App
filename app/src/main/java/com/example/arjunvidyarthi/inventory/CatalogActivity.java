@@ -1,5 +1,6 @@
 package com.example.arjunvidyarthi.inventory;
 
+import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,12 +8,14 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Switch;
@@ -34,10 +37,22 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         mDbHelper = new ItemDbHelper(this);
 
-        ListView petListView = (ListView) findViewById(R.id.inventory_list);
+        ListView ItemListView = (ListView) findViewById(R.id.inventory_list);
 
         mCursorAdapter = new ItemCursorAdapter(this, null);
-        petListView.setAdapter(mCursorAdapter);
+        ItemListView.setAdapter(mCursorAdapter);
+
+        ItemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+
+                Uri currentItemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, id);
+
+                intent.setData(currentItemUri);
+                startActivity(intent);
+            }
+        });
 
         getLoaderManager().initLoader(ITEM_LOADER,null,this);
 
