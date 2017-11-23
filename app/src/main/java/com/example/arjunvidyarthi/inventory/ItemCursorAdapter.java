@@ -53,13 +53,13 @@ public class ItemCursorAdapter extends CursorAdapter {
         price.setText("$"+cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_PRICE)));
         quantity.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY))));
 
-       sold.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               Uri itemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, pos);
-               decreaseProductQuantity(context, itemUri, quantityProduct);
-           }
-       });
+        sold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri itemUri = ContentUris.withAppendedId(ItemContract.ItemEntry.CONTENT_URI, pos);
+                decreaseProductQuantity(context, itemUri, quantityProduct);
+            }
+        });
 
     }
 

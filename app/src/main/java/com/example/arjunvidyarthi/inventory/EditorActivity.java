@@ -5,8 +5,10 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.Loader;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 
 import com.example.arjunvidyarthi.inventory.data.ItemContract;
 
+import java.io.IOException;
+
 /**
  * Created by Arjun Vidyarthi on 19-Nov-17.
  */
@@ -40,10 +44,14 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     private Button mQuantInc;
     private Button mQuantDec;
     private ImageView mItemImage;
+    private Uri uriImg;
+    private String imagePath;
 
     private Uri currentItemUri = null;
 
     private Boolean mItemChanged = false;
+
+    private Bitmap Image;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -77,7 +85,7 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mQuantDec = (Button) findViewById(R.id.quant_dec);
         mQuantInc = (Button) findViewById(R.id.quant_inc);
 
-        mItemImage = (ImageView) findViewById(R.id.item_image);
+        mItemImage = (ImageView) findViewById(R.id.imageView);
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
@@ -88,9 +96,32 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
 
         getLoaderManager().initLoader(0, null, this);
 
+        mImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                getIntent.setType("image/*");
+
+                Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                pickIntent.setType("image/*");
+
+                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                startActivityForResult(chooserIntent, 1);
+
+            }
+        });
+
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (TextUtils.isEmpty(mNameEditText.getText().toString()) || TextUtils.isEmpty(mPriceEditText.getText().toString()) || TextUtils.isEmpty(mQuantityEditText.getText().toString()) || TextUtils.isEmpty(mSupplierEditText.getText().toString())) {
+                    Toast.makeText(EditorActivity.this, "Please fill all the text fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 saveItem();
                 finish();
             }
@@ -169,12 +200,31 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
                     return;
                 } else if (TextUtils.isEmpty(mQuantityEditText.getText().toString())) {
                     mQuantityEditText.setText("0");
+                    Toast.makeText(EditorActivity.this, "Already 0", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                Toast.makeText(EditorActivity.this, "Already 0", Toast.LENGTH_SHORT).show();
+
                 return;
             }
         });
 
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            uriImg = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImg);
+                imagePath = uriImg.toString();
+                mItemImage.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -193,16 +243,19 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     }
 
     private void saveItem() {
+
         String itemName = mNameEditText.getText().toString().trim();
         String itemPrice = mPriceEditText.getText().toString().trim();
         int itemQuantity = Integer.parseInt(mQuantityEditText.getText().toString().trim());
         String itemSupplier = mSupplierEditText.getText().toString().trim();
+
 
         ContentValues values = new ContentValues();
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, itemName);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, itemPrice);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY, itemQuantity);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER, itemSupplier);
+        //values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE, uriImg.toString());
 
         if (currentItemUri == null) {
 
@@ -235,7 +288,8 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
                     ItemContract.ItemEntry.COLUMN_ITEM_NAME,
                     ItemContract.ItemEntry.COLUMN_ITEM_PRICE,
                     ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY,
-                    ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER};
+                    ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER,
+                    ItemContract.ItemEntry.COLUMN_ITEM_IMAGE};
 
             return new CursorLoader(this,
                     currentItemUri,
@@ -255,6 +309,10 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
             mPriceEditText.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_PRICE)));
             mQuantityEditText.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY))));
             mSupplierEditText.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER)));
+
+           // Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE)));
+           // mItemImage.setImageURI(uri);
+
         }
     }
 
@@ -264,6 +322,7 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mPriceEditText.clearComposingText();
         mQuantityEditText.clearComposingText();
         mSupplierEditText.clearComposingText();
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
