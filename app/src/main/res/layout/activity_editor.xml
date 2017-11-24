@@ -17,8 +17,10 @@
     <Button
         android:id="@+id/image_button"
         android:layout_width="wrap_content"
+        android:fontFamily="sans-serif-smallcaps"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="5dp"
         android:text="Select Image" />
 
     <LinearLayout
@@ -30,16 +32,20 @@
             android:id="@+id/name"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_weight="0.67"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="Name:"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edit_name"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_weight="0.69"
+            android:fontFamily="sans-serif-smallcaps"
             android:ems="10"
             android:hint="Enter name of commodity"
             android:inputType="textPersonName"
@@ -56,16 +62,20 @@
             android:id="@+id/price"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_weight="1"
             android:text="Price ($):"
-            android:textSize="24sp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/edit_price"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:layout_weight="1"
+            android:fontFamily="sans-serif-smallcaps"
             android:ems="10"
             android:hint="Enter price of commodity"
             android:inputType="numberDecimal"
@@ -82,20 +92,25 @@
             android:id="@+id/quant"
             android:layout_width="109dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="Quantity:"
-            android:textSize="24sp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/quant_inc"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="+" />
 
         <EditText
             android:id="@+id/edit_quant"
             android:layout_width="61dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:fontFamily="sans-serif-smallcaps"
             android:ems="10"
             android:inputType="numberSigned"
             android:textAlignment="center" />
@@ -104,6 +119,7 @@
             android:id="@+id/quant_dec"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="-" />
 
 
@@ -117,8 +133,9 @@
             android:id="@+id/supplier"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="5dp"
             android:text="Supplier Phone:"
+            android:fontFamily="sans-serif-smallcaps"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -126,7 +143,8 @@
             android:id="@+id/edit_supplier_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:fontFamily="sans-serif-smallcaps"
             android:ems="10"
             android:inputType="phone" />
 
@@ -145,6 +163,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:background="@android:color/holo_blue_light"
+            android:fontFamily="sans-serif-smallcaps"
             android:text="Call Supplier"
             android:textAlignment="center"
             android:textSize="24sp"
@@ -160,6 +179,7 @@
             android:elevation="0dp"
             android:text="Delete"
             android:textAlignment="center"
+            android:fontFamily="sans-serif-smallcaps"
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -173,6 +193,7 @@
         android:layout_margin="5dp"
         android:background="@android:color/holo_green_dark"
         android:text="Save"
+        android:fontFamily="sans-serif-smallcaps"
         android:textSize="24sp"
         android:textStyle="bold" />
 

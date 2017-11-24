@@ -196,16 +196,17 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mQuantDec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (TextUtils.isEmpty(mQuantityEditText.getText().toString())) {
+                    mQuantityEditText.setText("1");
+                    return;
+                }
                 int q = Integer.parseInt(mQuantityEditText.getText().toString());
                 if (q > 0) {
                     mQuantityEditText.setText(String.valueOf(q - 1));
-                    return;
-                } else if (TextUtils.isEmpty(mQuantityEditText.getText().toString())) {
-                    mQuantityEditText.setText("0");
-                    Toast.makeText(EditorActivity.this, "Already 0", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(EditorActivity.this, "Quantity can't be negative", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 return;
             }
         });
