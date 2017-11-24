@@ -14,6 +14,7 @@
             android:id="@+id/item_image"
             android:layout_width="match_parent"
             android:layout_height="70dp"
+            android:layout_margin="5dp"
             app:srcCompat="@mipmap/ic_launcher" />
     </LinearLayout>
 
@@ -25,7 +26,8 @@
         <TextView
             android:id="@+id/item_name"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:fontFamily="sans-serif-condensed"
             android:maxLines="1"
             android:text="Name"
@@ -38,6 +40,7 @@
             android:id="@+id/item_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:fontFamily="sans-serif"
             android:text="Quantity"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -56,6 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:minLines="1"
             android:text="Price"
@@ -76,6 +80,7 @@
             android:id="@+id/item_sold"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:focusable="false"
             android:text="SOLD" />
     </LinearLayout>
