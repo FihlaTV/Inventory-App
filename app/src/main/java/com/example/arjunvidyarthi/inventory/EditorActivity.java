@@ -116,8 +116,8 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
             @Override
             public void onClick(View view) {
 
-                if (TextUtils.isEmpty(mNameEditText.getText().toString()) || TextUtils.isEmpty(mPriceEditText.getText().toString()) || TextUtils.isEmpty(mQuantityEditText.getText().toString()) || TextUtils.isEmpty(mSupplierEditText.getText().toString())) {
-                    Toast.makeText(EditorActivity.this, "Please fill all the text fields", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(mNameEditText.getText().toString()) || TextUtils.isEmpty(mPriceEditText.getText().toString()) || TextUtils.isEmpty(mQuantityEditText.getText().toString()) || TextUtils.isEmpty(mSupplierEditText.getText().toString()) || uriImg == null) {
+                    Toast.makeText(EditorActivity.this, "Please fill all the text fields and select a picture", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
