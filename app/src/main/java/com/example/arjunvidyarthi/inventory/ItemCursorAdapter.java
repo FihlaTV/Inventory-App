@@ -61,6 +61,15 @@ public class ItemCursorAdapter extends CursorAdapter {
             }
         });
 
+        try {
+            Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE)));
+            img.setImageURI(uri);
+        } catch (NullPointerException e) {
+            img.setImageResource(R.drawable.ic_add);
+        } finally {
+            return;
+        }
+
     }
 
     private void decreaseProductQuantity(Context context, Uri itemUri, int currentQuantity) {

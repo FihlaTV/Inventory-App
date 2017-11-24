@@ -1,5 +1,6 @@
 package com.example.arjunvidyarthi.inventory;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
@@ -44,7 +46,7 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     private Button mQuantInc;
     private Button mQuantDec;
     private ImageView mItemImage;
-    private Uri uriImg;
+    private Uri uriImg = null;
     private String imagePath;
 
     private Uri currentItemUri = null;
@@ -88,6 +90,7 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mItemImage = (ImageView) findViewById(R.id.imageView);
 
         mNameEditText.setOnTouchListener(mTouchListener);
+        mImageButton.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupplierEditText.setOnTouchListener(mTouchListener);
@@ -99,16 +102,15 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                getIntent.setType("image/*");
-
-                Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                pickIntent.setType("image/*");
-
-                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
-                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
-
-                startActivityForResult(chooserIntent, 1);
+                Intent intent;
+                if (Build.VERSION.SDK_INT < 19) {
+                    intent = new Intent(Intent.ACTION_GET_CONTENT);
+                } else {
+                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                }
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent, "Select image"), 0);
 
             }
         });
@@ -211,18 +213,11 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
-            uriImg = data.getData();
-
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriImg);
-                imagePath = uriImg.toString();
-                mItemImage.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                uriImg = data.getData();
+                mItemImage.setImageURI(uriImg);
+                mItemImage.invalidate();
             }
         }
     }
@@ -255,7 +250,10 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, itemPrice);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY, itemQuantity);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER, itemSupplier);
-        //values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE, uriImg.toString());
+
+        if (uriImg != null) {
+            values.put(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE, uriImg.toString());
+        }
 
         if (currentItemUri == null) {
 
@@ -310,9 +308,14 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
             mQuantityEditText.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY))));
             mSupplierEditText.setText(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER)));
 
-           // Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE)));
-           // mItemImage.setImageURI(uri);
-
+            try {
+                Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_IMAGE)));
+                mItemImage.setImageURI(uri);
+            } catch (NullPointerException e) {
+                mItemImage.setImageResource(R.drawable.ic_add);
+            } finally {
+                return;
+            }
         }
     }
 
@@ -322,6 +325,7 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         mPriceEditText.clearComposingText();
         mQuantityEditText.clearComposingText();
         mSupplierEditText.clearComposingText();
+        mItemImage.setImageResource(R.drawable.ic_add);
 
     }
 
