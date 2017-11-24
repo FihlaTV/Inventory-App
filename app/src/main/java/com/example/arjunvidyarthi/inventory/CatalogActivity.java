@@ -103,7 +103,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, "A4 Notebook");
+        values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, "Notebook");
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_PRICE, "1.5");
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY, 25);
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_SUPPLIER, "9898989898");

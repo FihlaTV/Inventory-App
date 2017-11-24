@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:fontFamily="sans-serif-condensed"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="Name"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
