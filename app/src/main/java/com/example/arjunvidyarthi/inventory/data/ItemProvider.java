@@ -1,6 +1,5 @@
 package com.example.arjunvidyarthi.inventory.data;
 
-import android.content.ClipData;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -8,7 +7,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -134,7 +132,6 @@ public class ItemProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Get writeable database
         SQLiteDatabase database = myDbHelper.getWritableDatabase();
 
         final int match = sUriMatcher.match(uri);
@@ -163,9 +160,6 @@ public class ItemProvider extends ContentProvider {
             case ITEMS:
                 return updateItem(uri, contentValues, selection, selectionArgs);
             case ITEM_ID:
-                // For the PET_ID code, extract out the ID from the URI,
-                // so we know which row to update. Selection will be "_id=?" and selection
-                // arguments will be a String array containing the actual ID.
                 selection = ItemContract.ItemEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 return updateItem(uri, contentValues, selection, selectionArgs);
@@ -209,7 +203,6 @@ public class ItemProvider extends ContentProvider {
         }
         SQLiteDatabase database = myDbHelper.getWritableDatabase();
         getContext().getContentResolver().notifyChange(uri, null);
-        // Returns the number of database rows affected by the update statement
         return database.update(ItemContract.ItemEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 }

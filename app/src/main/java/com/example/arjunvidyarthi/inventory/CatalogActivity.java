@@ -3,6 +3,7 @@ package com.example.arjunvidyarthi.inventory;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.app.LoaderManager;
@@ -11,6 +12,7 @@ import android.content.Loader;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -28,7 +30,6 @@ import com.example.arjunvidyarthi.inventory.data.ItemContract;
 import com.example.arjunvidyarthi.inventory.data.ItemDbHelper;
 
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private ItemDbHelper mDbHelper;
     private static final int ITEM_LOADER = 1;
     ItemCursorAdapter mCursorAdapter;
 
@@ -36,8 +37,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
-
-        mDbHelper = new ItemDbHelper(this);
 
         ListView ItemListView = (ListView) findViewById(R.id.inventory_list);
 
@@ -80,10 +79,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-//            case R.id.action_refresh:
-//            Toast.makeText(this, "Refresh selected", Toast.LENGTH_SHORT)
-//                    .show();
-            //break;
 
             case R.id.action_insert_item:
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
@@ -93,14 +88,30 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
                 InsertItem();
                 return true;
             case R.id.action_delete_all:
-                getContentResolver().delete(ItemContract.ItemEntry.CONTENT_URI, null, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CatalogActivity.this);
+                builder.setMessage("Confirm deletion");
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        getContentResolver().delete(ItemContract.ItemEntry.CONTENT_URI, null, null);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void InsertItem() {
-        // SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(ItemContract.ItemEntry.COLUMN_ITEM_NAME, "Notebook");

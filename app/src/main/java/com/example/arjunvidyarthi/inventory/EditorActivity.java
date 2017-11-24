@@ -47,13 +47,10 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     private Button mQuantDec;
     private ImageView mItemImage;
     private Uri uriImg = null;
-    private String imagePath;
 
     private Uri currentItemUri = null;
 
     private Boolean mItemChanged = false;
-
-    private Bitmap Image;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -331,7 +328,6 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (!mItemChanged) {
@@ -370,6 +366,5 @@ public class EditorActivity extends AppCompatActivity implements android.app.Loa
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
 
 }

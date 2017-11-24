@@ -40,11 +40,11 @@ public class ItemCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
-        TextView name = (TextView) view.findViewById(R.id.item_name);
-        TextView price = (TextView) view.findViewById(R.id.item_price);
-        TextView quantity = (TextView) view.findViewById(R.id.item_quantity);
-        ImageView img = (ImageView) view.findViewById(R.id.item_image);
-        Button sold = (Button) view.findViewById(R.id.item_sold);
+        TextView name = view.findViewById(R.id.item_name);
+        TextView price = view.findViewById(R.id.item_price);
+        TextView quantity = view.findViewById(R.id.item_quantity);
+        ImageView img = view.findViewById(R.id.item_image);
+        Button sold = view.findViewById(R.id.item_sold);
 
         final int quantityProduct = cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ITEM_QUANTITY));
         final int pos = cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry._ID));
